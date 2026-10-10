@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ArrowRight, Check, LockKeyhole, Mail, ShoppingBag, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DEMO_ACCOUNTS, useAuth } from "../context/AuthContext";
+import { getFieldErrors, signInSchema, signUpSchema } from "../validation/schemas";
 
 export function AuthPage({ initialMode = "signin" }) {
   const { login, register, loading } = useAuth();
@@ -11,10 +12,18 @@ export function AuthPage({ initialMode = "signin" }) {
   const [email, setEmail] = useState("alice@example.com");
   const [password, setPassword] = useState("password123");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const submit = async (event) => {
     event.preventDefault();
     setError("");
+    setFieldErrors({});
+    const schema = mode === "signup" ? signUpSchema : signInSchema;
+    const validation = schema.safeParse({ name, email, password });
+    if (!validation.success) {
+      setFieldErrors(getFieldErrors(validation.error));
+      return;
+    }
     try {
       if (mode === "signup") {
         await register(name, email, password);
@@ -87,6 +96,7 @@ export function AuthPage({ initialMode = "signin" }) {
               onClick={() => {
                 setMode("signin");
                 setError("");
+                setFieldErrors({});
                 navigate("/signin");
               }}
               role="tab"
@@ -98,6 +108,7 @@ export function AuthPage({ initialMode = "signin" }) {
               onClick={() => {
                 setMode("signup");
                 setError("");
+                setFieldErrors({});
                 navigate("/signup");
               }}
               role="tab"
@@ -119,6 +130,7 @@ export function AuthPage({ initialMode = "signin" }) {
                     required
                   />
                 </div>
+                {fieldErrors.name && <small className="field-error">{fieldErrors.name}</small>}
               </label>
             )}
             <label>
@@ -133,6 +145,7 @@ export function AuthPage({ initialMode = "signin" }) {
                   required
                 />
               </div>
+              {fieldErrors.email && <small className="field-error">{fieldErrors.email}</small>}
             </label>
             <label>
               <span>Password</span>
@@ -147,6 +160,9 @@ export function AuthPage({ initialMode = "signin" }) {
                   required
                 />
               </div>
+              {fieldErrors.password && (
+                <small className="field-error">{fieldErrors.password}</small>
+              )}
             </label>
             {error && <div className="auth-error">{error}</div>}
             <button className="btn btn-primary auth-submit" disabled={loading} type="submit">

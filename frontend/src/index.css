@@ -959,6 +959,12 @@ select:focus-visible {
   background: #fef2f2;
   font-size: 0.78rem;
 }
+.field-error {
+  display: block;
+  margin-top: 0.35rem;
+  color: #b91c1c;
+  font-size: 0.72rem;
+}
 .demo-accounts {
   margin-top: 2rem;
   padding-top: 1.35rem;

@@ -11,6 +11,7 @@ import {
   AlertCircle,
   ShoppingCart,
 } from "lucide-react";
+import { chatMessageSchema } from "../validation/schemas";
 
 export function AssistantDrawer({ isOpen, onClose, onAddToCart }) {
   const [input, setInput] = useState("");
@@ -36,12 +37,28 @@ export function AssistantDrawer({ isOpen, onClose, onAddToCart }) {
 
   const handleSend = async (messageText) => {
     const textToSend = messageText || input;
-    if (!textToSend.trim() || loading) return;
+    if (loading) return;
+
+    const validation = chatMessageSchema.safeParse({ message: textToSend });
+    if (!validation.success) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: String(Date.now()),
+          sender: "assistant",
+          text: validation.error.issues[0]?.message || "Enter a valid message.",
+          isError: true,
+        },
+      ]);
+      return;
+    }
+
+    const validMessage = validation.data.message;
 
     const userMsg = {
       id: String(Date.now()),
       sender: "user",
-      text: textToSend,
+      text: validMessage,
     };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
@@ -49,7 +66,7 @@ export function AssistantDrawer({ isOpen, onClose, onAddToCart }) {
 
     try {
       // Call coordinated chat API
-      const res = await api.sendChat(textToSend);
+      const res = await api.sendChat(validMessage);
 
       const assistantMsg = {
         id: String(Date.now() + 1),

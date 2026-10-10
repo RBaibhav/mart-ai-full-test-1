@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { X, Upload, CheckCircle2, AlertTriangle } from "lucide-react";
+import { documentUploadSchema, getFieldErrors } from "../validation/schemas";
 
 export function DocumentUploadModal({ isOpen, onClose }) {
   const { user } = useAuth();
@@ -13,6 +14,7 @@ export function DocumentUploadModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
   const [isError, setIsError] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   if (!isOpen) return null;
 
@@ -20,15 +22,24 @@ export function DocumentUploadModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
+    const validation = documentUploadSchema.safeParse({
+      file,
+      version,
+      effectiveDate,
+      category,
+      region,
+    });
+    if (!validation.success) {
       setIsError(true);
-      setStatusMessage("Please select a PDF, Markdown, or JSON document to upload.");
+      setFieldErrors(getFieldErrors(validation.error));
+      setStatusMessage("Please correct the highlighted fields before uploading.");
       return;
     }
 
     setLoading(true);
     setStatusMessage(null);
     setIsError(false);
+    setFieldErrors({});
 
     try {
       const formData = new FormData();
@@ -123,6 +134,7 @@ export function DocumentUploadModal({ isOpen, onClose }) {
               className="input"
               required
             />
+            {fieldErrors.file && <small className="field-error">{fieldErrors.file}</small>}
           </div>
 
           <div
@@ -150,6 +162,7 @@ export function DocumentUploadModal({ isOpen, onClose }) {
                 className="input"
                 required
               />
+              {fieldErrors.version && <small className="field-error">{fieldErrors.version}</small>}
             </div>
 
             <div>
@@ -170,6 +183,9 @@ export function DocumentUploadModal({ isOpen, onClose }) {
                 className="input"
                 required
               />
+              {fieldErrors.effectiveDate && (
+                <small className="field-error">{fieldErrors.effectiveDate}</small>
+              )}
             </div>
           </div>
 
@@ -198,6 +214,9 @@ export function DocumentUploadModal({ isOpen, onClose }) {
                 className="input"
                 required
               />
+              {fieldErrors.category && (
+                <small className="field-error">{fieldErrors.category}</small>
+              )}
             </div>
 
             <div>
@@ -218,6 +237,7 @@ export function DocumentUploadModal({ isOpen, onClose }) {
                 className="input"
                 required
               />
+              {fieldErrors.region && <small className="field-error">{fieldErrors.region}</small>}
             </div>
           </div>
 
