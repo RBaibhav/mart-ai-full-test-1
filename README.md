@@ -1,3 +1,5 @@
+# Got me the 1st Job
+
 # ShopSmart AI
 
 ShopSmart AI is an intelligent e-commerce shopping platform and AI assistant built strictly according to the **ShopSmart AI Solution Design** specification.
