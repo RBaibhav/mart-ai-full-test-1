@@ -38,7 +38,8 @@ public class CoordinatedChatService {
 
         // Intent detection: Coordinated order tracking + cancellation policy lookup
         boolean asksAboutOrder = lower.contains("where is my order") || lower.contains("order status")
-                || lower.contains("track") || lower.contains("shipment") || lower.contains("order");
+            || lower.contains("track") || lower.contains("shipment") || lower.contains("delivery")
+            || lower.contains("delivered") || lower.contains("shipped") || lower.contains("out for delivery");
         boolean asksAboutCancel = lower.contains("cancel") || lower.contains("cancellation");
         boolean asksAboutReturnOrPolicy = lower.contains("return") || lower.contains("policy") || lower.contains("refund");
         boolean asksAboutRecommendation = lower.contains("recommend") || lower.contains("laptop")

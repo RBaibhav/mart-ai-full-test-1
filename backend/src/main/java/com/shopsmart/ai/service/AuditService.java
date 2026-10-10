@@ -42,6 +42,10 @@ public class AuditService {
     }
 
     public List<AuditRecord> getAllAudits() {
-        return auditRecordRepository.findAllByOrderByTimestampDesc();
+        CurrentUser user = UserContext.get();
+        if (user == null) {
+            return List.of();
+        }
+        return auditRecordRepository.findByCustomerIdOrderByTimestampDesc(user.getId());
     }
 }
