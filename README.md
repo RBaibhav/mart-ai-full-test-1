@@ -1,4 +1,4 @@
-# Got me the 1st Job
+# Got me My 1st Job.
 
 # ShopSmart AI
 
