@@ -27,6 +27,13 @@ spring:
 
 # ShopSmart AI configuration
 shopsmart:
+  ai:
+    enabled: ${SHOPSMART_AI_ENABLED:true}
+    api-key: ${OPENROUTER_API_KEY:}
+    base-url: ${OPENROUTER_BASE_URL:https://openrouter.ai/api/v1}
+    model: ${OPENROUTER_MODEL:openai/gpt-4o-mini}
+    site-url: ${OPENROUTER_SITE_URL:http://localhost:5175}
+    app-name: ${OPENROUTER_APP_NAME:ShopSmart AI}
   jwt:
     secret: "shopsmart-super-secret-jwt-key-2026-minimum-256-bits-length-secure-key"
     expiration-ms: 86400000 # 24 hours

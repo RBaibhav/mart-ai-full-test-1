@@ -9,19 +9,21 @@ ShopSmart AI is an intelligent e-commerce shopping platform and AI assistant bui
 ShopSmart AI provides a responsive shopping interface and one AI assistant that coordinates catalog data, approved knowledge documents, and customer order information.
 
 ### Committed Scope
-* **Shopping**: Login, catalog, category hierarchy, search, category/brand/price filters, price/rating sorting, pagination, comparison, wishlist, cart, preferences, and responsive layout.
-* **Recommendations**: Interpret intent, extract requirements, apply product constraints, recommend catalog matches, explain reasons, check availability, and clarify incomplete requests.
-* **Knowledge assistant**: Upload PDF, Markdown, and JSON; extract, chunk, embed, retrieve, and generate grounded answers with document references.
-* **Order tracking**: Retrieve simulated customer orders and mocked shipment events.
-* **Agent coordination**: One assistant calls backend services for product search, inventory, order status, and knowledge retrieval.
-* **Explainability and audit**: Display reasons and citations; record requests, tool activity, source references, outcomes, and timestamps.
+
+- **Shopping**: Login, catalog, category hierarchy, search, category/brand/price filters, price/rating sorting, pagination, comparison, wishlist, cart, preferences, and responsive layout.
+- **Recommendations**: Interpret intent, extract requirements, apply product constraints, recommend catalog matches, explain reasons, check availability, and clarify incomplete requests.
+- **Knowledge assistant**: Upload PDF, Markdown, and JSON; extract, chunk, embed, retrieve, and generate grounded answers with document references.
+- **Order tracking**: Retrieve simulated customer orders and mocked shipment events.
+- **Agent coordination**: One assistant calls backend services for product search, inventory, order status, and knowledge retrieval.
+- **Explainability and audit**: Display reasons and citations; record requests, tool activity, source references, outcomes, and timestamps.
 
 ### Scope Boundaries (Strictly Excluded)
-* No payment integration.
-* No real carrier or external marketplace integrations.
-* No stock forecasting, promotion management, or pricing automation.
-* No production-scale deployment in initial demo.
-* Cancellation eligibility is strictly informational; the assistant does not execute cancellations.
+
+- No payment integration.
+- No real carrier or external marketplace integrations.
+- No stock forecasting, promotion management, or pricing automation.
+- No production-scale deployment in initial demo.
+- Cancellation eligibility is strictly informational; the assistant does not execute cancellations.
 
 ---
 
@@ -156,76 +158,98 @@ The relational database matches the Entity Relationship Diagram:
 
 ## 4. API Endpoints
 
-| Method | Endpoint | Request Body / Params | Description |
-|---|---|---|---|
-| `POST` | `/api/auth/login` | `{ email, password }` | Authenticates demo customer and returns profile + JWT |
-| `GET` | `/api/categories` | None | Returns category tree hierarchy |
-| `GET` | `/api/products` | `search, category, brand, priceMin, priceMax, sort, page, size` | Products pagination & filters |
-| `GET` | `/api/products/{id}` | Product ID | Product details, specifications, availability |
-| `GET` | `/api/products/compare` | `ids` (comma-separated UUIDs) | Side-by-side comparison matrix |
-| `GET` | `/api/preferences` | None | Authenticated customer preferences |
-| `PUT` | `/api/preferences` | `{ categories, brands, budget }` | Updates customer preferences |
-| `GET` | `/api/wishlist` | None | Authenticated customer wishlist |
-| `POST` | `/api/wishlist` | `{ productId }` | Adds product to wishlist |
-| `DELETE` | `/api/wishlist/{productId}` | Product ID | Removes product from wishlist |
-| `GET` | `/api/cart` | None | Retrieves cart items and total |
-| `POST` | `/api/cart/items` | `{ productId, quantity }` | Adds product to cart |
-| `PUT` | `/api/cart/items/{productId}` | `{ quantity }` | Updates item quantity |
-| `DELETE` | `/api/cart/items/{productId}` | Product ID | Removes item from cart |
-| `GET` | `/api/orders` | None | Customer orders list |
-| `GET` | `/api/orders/{id}` | Order ID | Order items and mocked shipment events |
-| `GET` | `/api/inventory/{productId}` | Product ID | Warehouse breakdown and stock availability |
-| `POST` | `/api/documents` | Multipart (`file, version, effectiveDate, category, region`) | Ingests PDF/MD/JSON document |
-| `POST` | `/api/ai/recommendations` | `{ message }` | Generates catalog product recommendations |
-| `POST` | `/api/ai/knowledge` | `{ question, category, region }` | Answers policy questions with grounded citations |
-| `POST` | `/api/ai/chat` | `{ message }` | Coordinated assistant (orders + inventory + policy) |
-| `GET` | `/api/ai/audit` | None | Explainability & audit trail records |
+| Method   | Endpoint                      | Request Body / Params                                           | Description                                           |
+| -------- | ----------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| `POST`   | `/api/auth/login`             | `{ email, password }`                                           | Authenticates demo customer and returns profile + JWT |
+| `GET`    | `/api/categories`             | None                                                            | Returns category tree hierarchy                       |
+| `GET`    | `/api/products`               | `search, category, brand, priceMin, priceMax, sort, page, size` | Products pagination & filters                         |
+| `GET`    | `/api/products/{id}`          | Product ID                                                      | Product details, specifications, availability         |
+| `GET`    | `/api/products/compare`       | `ids` (comma-separated UUIDs)                                   | Side-by-side comparison matrix                        |
+| `GET`    | `/api/preferences`            | None                                                            | Authenticated customer preferences                    |
+| `PUT`    | `/api/preferences`            | `{ categories, brands, budget }`                                | Updates customer preferences                          |
+| `GET`    | `/api/wishlist`               | None                                                            | Authenticated customer wishlist                       |
+| `POST`   | `/api/wishlist`               | `{ productId }`                                                 | Adds product to wishlist                              |
+| `DELETE` | `/api/wishlist/{productId}`   | Product ID                                                      | Removes product from wishlist                         |
+| `GET`    | `/api/cart`                   | None                                                            | Retrieves cart items and total                        |
+| `POST`   | `/api/cart/items`             | `{ productId, quantity }`                                       | Adds product to cart                                  |
+| `PUT`    | `/api/cart/items/{productId}` | `{ quantity }`                                                  | Updates item quantity                                 |
+| `DELETE` | `/api/cart/items/{productId}` | Product ID                                                      | Removes item from cart                                |
+| `GET`    | `/api/orders`                 | None                                                            | Customer orders list                                  |
+| `GET`    | `/api/orders/{id}`            | Order ID                                                        | Order items and mocked shipment events                |
+| `GET`    | `/api/inventory/{productId}`  | Product ID                                                      | Warehouse breakdown and stock availability            |
+| `POST`   | `/api/documents`              | Multipart (`file, version, effectiveDate, category, region`)    | Ingests PDF/MD/JSON document                          |
+| `POST`   | `/api/ai/recommendations`     | `{ message }`                                                   | Generates catalog product recommendations             |
+| `POST`   | `/api/ai/knowledge`           | `{ question, category, region }`                                | Answers policy questions with grounded citations      |
+| `POST`   | `/api/ai/chat`                | `{ message }`                                                   | Coordinated assistant (orders + inventory + policy)   |
+| `GET`    | `/api/ai/audit`               | None                                                            | Explainability & audit trail records                  |
 
 ---
 
 ## 5. Seeded Demo Accounts
 
-| Name | Email | Password | Membership Tier | Permissions |
-|---|---|---|---|---|
-| **Alice Walker** | `alice@example.com` | `password123` | **Prime** | Seeded with active order in `SHIPPED` status |
-| **Bob Smith** | `bob@example.com` | `password123` | **Premium** | Higher budget preference ($2500) |
-| **Charlie Brown** | `charlie@example.com` | `password123` | **Basic** | Audio preference ($400) |
-| **Admin Uploader** | `admin@shopsmart.com` | `admin123` | **Premium** | Authorized demo uploader for knowledge docs |
+| Name               | Email                 | Password      | Membership Tier | Permissions                                  |
+| ------------------ | --------------------- | ------------- | --------------- | -------------------------------------------- |
+| **Alice Walker**   | `alice@example.com`   | `password123` | **Prime**       | Seeded with active order in `SHIPPED` status |
+| **Bob Smith**      | `bob@example.com`     | `password123` | **Premium**     | Higher budget preference ($2500)             |
+| **Charlie Brown**  | `charlie@example.com` | `password123` | **Basic**       | Audio preference ($400)                      |
+| **Admin Uploader** | `admin@shopsmart.com` | `admin123`    | **Premium**     | Authorized demo uploader for knowledge docs  |
 
 ---
 
 ## 6. How to Run the Project
 
 ### Prerequisites
-* Java 17+
-* Node.js 18+ and npm
-* (Optional) Docker for PostgreSQL + pgvector container
+
+- Java 17+
+- Node.js 18+ and npm
+- (Optional) Docker for PostgreSQL + pgvector container
 
 ### Step 1: Start PostgreSQL + pgvector (Optional)
+
 If running against PostgreSQL:
+
 ```bash
 docker compose up -d
 ```
-*(By default, the backend runs seamlessly out-of-the-box with embedded in-memory database with full PostgreSQL compatibility and seed data).*
+
+_(By default, the backend runs seamlessly out-of-the-box with embedded in-memory database with full PostgreSQL compatibility and seed data)._
 
 ### Step 2: Run the Backend
+
 ```bash
 cd backend
 mvn clean spring-boot:run
 ```
+
 The Spring Boot API will start on `http://localhost:8080`.
 
+#### Enable external AI responses with OpenRouter
+
+The assistant uses grounded catalog, order, inventory, and policy context. To enable OpenRouter, set the key in your shell before starting Spring Boot. Never commit the key to Git:
+
+```bash
+export OPENROUTER_API_KEY="your-key"
+export OPENROUTER_MODEL="openai/gpt-4o-mini"
+export SHOPSMART_AI_ENABLED=true
+```
+
+The default endpoint is `https://openrouter.ai/api/v1`. You can choose any OpenRouter model slug with `OPENROUTER_MODEL`. Without a key, the deterministic grounded assistant remains available as a local fallback.
+
 ### Step 3: Run the Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-The React + Vite application will start on `http://localhost:3000` (proxied to `http://localhost:8080/api`).
+
+The React + Vite application will start on `http://localhost:5175` (proxied to `http://localhost:8080/api`).
 
 ### Step 4: Run Tests
+
 ```bash
 cd backend
 mvn test
 ```
+
 All 9 end-to-end integration tests execute and verify the 4 stages.

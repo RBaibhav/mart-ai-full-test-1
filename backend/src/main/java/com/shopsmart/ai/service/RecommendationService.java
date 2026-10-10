@@ -170,7 +170,11 @@ public class RecommendationService {
         if (lower.contains("monitor") || lower.contains("screen") || lower.contains("display")) {
             return "monitor";
         }
-        if (lower.contains("phone") || lower.contains("smartphone") || lower.contains("iphone") || lower.contains("samsung")) {
+        if (lower.contains("smartphone") || lower.contains("iphone") || lower.contains("samsung")
+                || lower.contains("pixel") || lower.contains("galaxy")) {
+            return "smartphone";
+        }
+        if (lower.contains("phone")) {
             return "phone";
         }
         return "";
