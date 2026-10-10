@@ -7,6 +7,7 @@ import com.shopsmart.orders.repository.CustomerRepository;
 import com.shopsmart.security.dto.CustomerProfileDto;
 import com.shopsmart.security.dto.LoginRequest;
 import com.shopsmart.security.dto.LoginResponse;
+import com.shopsmart.security.dto.RegisterRequest;
 import com.shopsmart.shopping.model.CustomerPreference;
 import com.shopsmart.shopping.repository.CustomerPreferenceRepository;
 import org.springframework.http.HttpStatus;
@@ -61,5 +62,22 @@ public class AuthService {
         );
 
         return new LoginResponse(token, profile);
+    }
+
+    public LoginResponse register(RegisterRequest request) {
+        String email = request.getEmail().trim().toLowerCase();
+        if (customerRepository.existsByEmail(email)) {
+            throw new ApiException("EMAIL_ALREADY_REGISTERED", "An account with this email already exists.", HttpStatus.CONFLICT);
+        }
+
+        Customer customer = customerRepository.save(new Customer(
+                null,
+                request.getName().trim(),
+                email,
+                passwordEncoder.encode(request.getPassword()),
+                "Basic"
+        ));
+
+        return login(new LoginRequest(email, request.getPassword()));
     }
 }

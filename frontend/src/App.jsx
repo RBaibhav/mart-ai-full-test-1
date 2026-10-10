@@ -11,9 +11,10 @@ import { WishlistPage } from "./pages/WishlistPage";
 import { OrdersPage } from "./pages/OrdersPage";
 import { PreferencesPage } from "./pages/PreferencesPage";
 import { AuditPage } from "./pages/AuditPage";
+import { AuthPage } from "./pages/AuthPage";
 
 export function App() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState("catalog");
 
   // Badge counters & selections
@@ -93,6 +94,19 @@ export function App() {
   const handleAskAssistantAboutOrder = (prompt) => {
     setIsAssistantOpen(true);
   };
+
+  if (loading && !user) {
+    return (
+      <div className="auth-loading">
+        <div className="skeleton auth-loading-mark" />
+        <div className="skeleton auth-loading-line" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
 
   return (
     <div
