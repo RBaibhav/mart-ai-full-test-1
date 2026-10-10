@@ -60,8 +60,8 @@ public class RecommendationService {
         String searchTerm = extractSearchKeyword(message);
         List<Product> matches = catalogTool.searchCatalog(searchTerm, budget);
 
-        // If no matches with specific term, try broader catalog search under budget
-        if (matches.isEmpty() && budget != null) {
+        // Only broaden an untyped budget request; never substitute another category.
+        if (matches.isEmpty() && budget != null && searchTerm.isBlank()) {
             matches = catalogTool.searchCatalog("", budget);
         }
 
@@ -152,6 +152,10 @@ public class RecommendationService {
         }
         if (lower.contains("headphone") || lower.contains("audio") || lower.contains("sony")) {
             return "headphone";
+        }
+        if (lower.contains("camera") || lower.contains("photography") || lower.contains("canon")
+                || lower.contains("mirrorless") || lower.contains("dslr")) {
+            return "camera";
         }
         if (lower.contains("monitor") || lower.contains("screen") || lower.contains("display")) {
             return "monitor";

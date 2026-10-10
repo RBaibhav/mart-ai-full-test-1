@@ -49,7 +49,10 @@ public class ExternalAiService {
                                 "role", "system",
                                 "content", "You are ShopSmart AI. Answer only from the grounded context. "
                                         + "Never invent prices, stock, orders, delivery dates, or policy rules. "
-                                        + "If the context is insufficient, say that clearly. Keep answers concise and useful."
+                                    + "For recommendations, the structured Recommendation data is authoritative: "
+                                    + "mention only products listed there and never claim the catalog lacks a category "
+                                    + "when listed products exist. If the context is insufficient, say that clearly. "
+                                    + "Keep answers concise and useful."
                         ),
                         Map.of(
                                 "role", "user",

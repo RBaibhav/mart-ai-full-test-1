@@ -33,7 +33,10 @@ public class ProductCatalogTool {
                     String desc = p.getDescription() != null ? p.getDescription().toLowerCase() : "";
                     String specs = p.getSpecifications() != null ? p.getSpecifications().toLowerCase() : "";
 
-                    return name.contains(q) || brand.contains(q) || desc.contains(q) || specs.contains(q);
+                        boolean categorySearch = List.of("laptop", "headphone", "monitor", "smartphone", "phone", "camera")
+                            .contains(q);
+                        return name.contains(q) || brand.contains(q) || desc.contains(q)
+                            || (!categorySearch && specs.contains(q));
                 })
                 .collect(Collectors.toList());
     }
