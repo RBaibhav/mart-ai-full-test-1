@@ -12,6 +12,7 @@ export function FilterSidebar({
   priceMax,
   setPriceMax,
   onResetFilters,
+  filterErrors,
 }) {
   const brands = ["Dell", "Apple", "Lenovo", "Sony", "Bose"];
 
@@ -222,6 +223,8 @@ export function FilterSidebar({
               min="0"
             />
           </div>
+          {filterErrors?.priceMin && <div className="field-error" style={{marginTop: "4px"}}>{filterErrors.priceMin}</div>}
+          {filterErrors?.priceMax && <div className="field-error" style={{marginTop: "4px"}}>{filterErrors.priceMax}</div>}
         </div>
       </div>
     </aside>

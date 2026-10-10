@@ -34,6 +34,20 @@ export const documentUploadSchema = z.object({
   region: requiredText("Region").max(100, "Region is too long."),
 });
 
+export const catalogFilterSchema = z.object({
+  search: z.string().max(100, "Search query is too long.").optional(),
+  priceMin: z.union([z.coerce.number().min(0, "Price cannot be negative"), z.literal("")]).optional(),
+  priceMax: z.union([z.coerce.number().min(0, "Price cannot be negative"), z.literal("")]).optional(),
+}).refine(data => {
+  if (data.priceMin !== "" && data.priceMax !== "" && data.priceMin !== undefined && data.priceMax !== undefined) {
+    return Number(data.priceMax) >= Number(data.priceMin);
+  }
+  return true;
+}, {
+  message: "Max must be ≥ Min.",
+  path: ["priceMax"]
+});
+
 export function getFieldErrors(error) {
   return error.issues.reduce((errors, issue) => {
     const field = issue.path[0];

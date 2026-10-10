@@ -5,6 +5,7 @@ import { ProductCard } from "../components/ProductCard";
 import { Pagination } from "../components/Pagination";
 import { ProductDetailPageModal } from "../components/ProductDetailPageModal";
 import { Search, ArrowUpDown, Layers, Sparkles } from "lucide-react";
+import { catalogFilterSchema, getFieldErrors } from "../validation/schemas";
 
 export function CatalogPage({
   onAddToCart,
@@ -33,6 +34,8 @@ export function CatalogPage({
   // Selected product modal
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const [filterErrors, setFilterErrors] = useState({});
+
   // Load categories hierarchy once
   useEffect(() => {
     api
@@ -43,6 +46,13 @@ export function CatalogPage({
 
   // Fetch products with filters & pagination
   const fetchProducts = () => {
+    setFilterErrors({});
+    const validation = catalogFilterSchema.safeParse({ search, priceMin, priceMax });
+    if (!validation.success) {
+      setFilterErrors(getFieldErrors(validation.error));
+      return;
+    }
+
     setLoading(true);
     api
       .getProducts({
@@ -82,6 +92,7 @@ export function CatalogPage({
     setPriceMax("");
     setSort("rating_desc");
     setPage(0);
+    setFilterErrors({});
   };
 
   return (
@@ -141,6 +152,11 @@ export function CatalogPage({
                     transform: "translateY(-50%)",
                   }}
                 />
+                {filterErrors.search && (
+                  <small className="field-error" style={{ position: "absolute", top: "100%", left: "0", marginTop: "4px" }}>
+                    {filterErrors.search}
+                  </small>
+                )}
               </div>
               <button type="submit" className="btn btn-primary btn-sm">
                 Search
@@ -200,6 +216,7 @@ export function CatalogPage({
             priceMax={priceMax}
             setPriceMax={setPriceMax}
             onResetFilters={handleResetFilters}
+            filterErrors={filterErrors}
           />
 
           <div style={{ flex: 1, minWidth: 0 }}>
