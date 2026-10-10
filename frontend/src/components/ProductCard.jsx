@@ -12,8 +12,7 @@ export function ProductCard({
 }) {
   const isOutOfStock = product.availability === "OUT_OF_STOCK";
   const imageUrl =
-    product.images?.[0] ||
-    "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=600";
+    product.images?.[0] || "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=600";
 
   return (
     <article className="product-card">
@@ -43,12 +42,7 @@ export function ProductCard({
 
       {/* Product Image */}
       <div className="product-image" onClick={() => onSelectProduct(product)}>
-        <img
-          src={imageUrl}
-          alt={product.name}
-          className="product-image-img"
-          loading="lazy"
-        />
+        <img src={imageUrl} alt={product.name} className="product-image-img" loading="lazy" />
       </div>
 
       {/* Product Info */}
@@ -62,34 +56,24 @@ export function ProductCard({
         <div className="product-meta">
           <div className="rating">
             <Star size={14} fill="#eab308" color="#eab308" />
-            <span>
-              {product.rating ? Number(product.rating).toFixed(1) : "4.5"}
-            </span>
+            <span>{product.rating ? Number(product.rating).toFixed(1) : "4.5"}</span>
           </div>
 
-          <span
-            className={`badge ${isOutOfStock ? "badge-stock-out" : "badge-stock-in"}`}
-          >
+          <span className={`badge ${isOutOfStock ? "badge-stock-out" : "badge-stock-in"}`}>
             {isOutOfStock ? "Out of Stock" : "In Stock"}
           </span>
         </div>
 
         {/* Price & Action */}
         <div className="product-buy-row">
-          <div className="product-price">
-            ${Number(product.price).toFixed(2)}
-          </div>
+          <div className="product-price">${Number(product.price).toFixed(2)}</div>
 
           <button
             className={`btn btn-sm ${isOutOfStock ? "btn-secondary" : "btn-primary"}`}
             disabled={isOutOfStock}
             onClick={() => onAddToCart(product.id, 1)}
           >
-            {isOutOfStock ? (
-              <ArrowUpRight size={14} />
-            ) : (
-              <ShoppingCart size={14} />
-            )}
+            {isOutOfStock ? <ArrowUpRight size={14} /> : <ShoppingCart size={14} />}
             {isOutOfStock ? "Sold Out" : "Add"}
           </button>
         </div>

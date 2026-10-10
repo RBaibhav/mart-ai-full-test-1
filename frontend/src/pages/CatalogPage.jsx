@@ -90,12 +90,10 @@ export function CatalogPage({
         <section className="catalog-intro">
           <div>
             <div className="eyebrow">Curated commerce, made clearer</div>
-            <h1 className="page-title">
-              Find the right tech for the work ahead.
-            </h1>
+            <h1 className="page-title">Find the right tech for the work ahead.</h1>
             <p className="page-description">
-              Explore a verified catalog, compare the details that matter, and
-              ask ShopSmart AI to narrow the field around your needs.
+              Explore a verified catalog, compare the details that matter, and ask ShopSmart AI to
+              narrow the field around your needs.
             </p>
           </div>
           <button className="ai-discovery-link" onClick={onOpenAssistant}>
@@ -152,13 +150,11 @@ export function CatalogPage({
             {/* Sort & Results Count */}
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                Showing <strong>{products.length}</strong> of{" "}
-                <strong>{totalElements}</strong> products
+                Showing <strong>{products.length}</strong> of <strong>{totalElements}</strong>{" "}
+                products
               </span>
 
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <ArrowUpDown size={15} color="var(--text-muted)" />
                 <select
                   value={sort}
@@ -219,10 +215,7 @@ export function CatalogPage({
                 Loading catalog products...
               </div>
             ) : products.length === 0 ? (
-              <div
-                className="card"
-                style={{ padding: "4rem", textAlign: "center" }}
-              >
+              <div className="card" style={{ padding: "4rem", textAlign: "center" }}>
                 <h3
                   style={{
                     fontSize: "1.1rem",
@@ -239,13 +232,9 @@ export function CatalogPage({
                     marginBottom: "1rem",
                   }}
                 >
-                  Try adjusting your search criteria, category filter, or price
-                  range.
+                  Try adjusting your search criteria, category filter, or price range.
                 </p>
-                <button
-                  className="btn btn-secondary"
-                  onClick={handleResetFilters}
-                >
+                <button className="btn btn-secondary" onClick={handleResetFilters}>
                   Clear all filters
                 </button>
               </div>
@@ -255,8 +244,7 @@ export function CatalogPage({
                   className="product-grid"
                   style={{
                     display: "grid",
-                    gridTemplateColumns:
-                      "repeat(auto-fill, minmax(260px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
                     gap: "1.25rem",
                   }}
                 >
@@ -332,9 +320,7 @@ export function CatalogPage({
         onClose={() => setSelectedProduct(null)}
         onAddToCart={onAddToCart}
         onToggleWishlist={onToggleWishlist}
-        isWishlisted={
-          selectedProduct ? wishlistIds.includes(selectedProduct.id) : false
-        }
+        isWishlisted={selectedProduct ? wishlistIds.includes(selectedProduct.id) : false}
       />
     </div>
   );

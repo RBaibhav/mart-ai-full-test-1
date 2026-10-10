@@ -1,11 +1,19 @@
-import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "0.5rem",
+        marginTop: "1.5rem",
+      }}
+    >
       <button
         className="btn btn-secondary btn-sm"
         disabled={currentPage <= 0}
@@ -15,12 +23,12 @@ export function Pagination({ currentPage, totalPages, onPageChange }) {
         Prev
       </button>
 
-      <div style={{ display: 'flex', gap: '0.25rem' }}>
+      <div style={{ display: "flex", gap: "0.25rem" }}>
         {Array.from({ length: totalPages }).map((_, idx) => (
           <button
             key={idx}
-            className={`btn btn-sm ${currentPage === idx ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ minWidth: '32px' }}
+            className={`btn btn-sm ${currentPage === idx ? "btn-primary" : "btn-secondary"}`}
+            style={{ minWidth: "32px" }}
             onClick={() => onPageChange(idx)}
           >
             {idx + 1}

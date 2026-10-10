@@ -7,7 +7,9 @@
     "dev": "node node_modules/vite/bin/vite.js",
     "start": "node node_modules/vite/bin/vite.js --host 0.0.0.0",
     "build": "node node_modules/vite/bin/vite.js build",
-    "preview": "node node_modules/vite/bin/vite.js preview"
+    "preview": "node node_modules/vite/bin/vite.js preview",
+    "format": "prettier --write \"src/**/*.{js,jsx,css}\" vite.config.js package.json",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\" vite.config.js package.json"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^6.1.2",
@@ -16,5 +18,8 @@
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4",
     "vite": "^8.3.4"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9"
   }
 }

@@ -41,11 +41,7 @@ export function Navbar({
   return (
     <header className="app-header">
       <div className="container header-inner">
-        <button
-          className="brand"
-          onClick={() => navigate("catalog")}
-          aria-label="Go to catalog"
-        >
+        <button className="brand" onClick={() => navigate("catalog")} aria-label="Go to catalog">
           <span className="brand-mark">
             <ShoppingBag size={19} />
           </span>
@@ -57,10 +53,7 @@ export function Navbar({
         <nav className={`main-nav ${mobileOpen ? "is-open" : ""}`}>
           <div className="mobile-nav-head">
             <span>Workspace</span>
-            <button
-              className="icon-button"
-              onClick={() => setMobileOpen(false)}
-            >
+            <button className="icon-button" onClick={() => setMobileOpen(false)}>
               <X size={18} />
             </button>
           </div>
@@ -77,10 +70,7 @@ export function Navbar({
         </nav>
 
         <div className="header-actions">
-          <button
-            className="btn btn-primary assistant-button"
-            onClick={onOpenAssistant}
-          >
+          <button className="btn btn-primary assistant-button" onClick={onOpenAssistant}>
             <Sparkles size={16} /> Ask AI
           </button>
           <button
@@ -100,9 +90,7 @@ export function Navbar({
               aria-label="Switch demo account"
               value={user?.email || ""}
               onChange={(e) => {
-                const target = DEMO_ACCOUNTS.find(
-                  (acc) => acc.email === e.target.value,
-                );
+                const target = DEMO_ACCOUNTS.find((acc) => acc.email === e.target.value);
                 if (target) switchAccount(target);
               }}
             >
@@ -115,11 +103,7 @@ export function Navbar({
                 </option>
               ))}
             </select>
-            <button
-              className="icon-button logout-button"
-              onClick={logout}
-              title="Sign out"
-            >
+            <button className="icon-button logout-button" onClick={logout} title="Sign out">
               <LogOut size={16} />
             </button>
           </div>

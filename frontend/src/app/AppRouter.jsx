@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter,
-  Navigate,
-  useLocation,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter, Navigate, useLocation, Routes, Route } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { AuthRoutes } from "./AuthRoutes";
 import { WorkspaceRoutes } from "./WorkspaceRoutes";

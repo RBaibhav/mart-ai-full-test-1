@@ -57,10 +57,7 @@ function CartRoute() {
 function WishlistRoute() {
   const { handleAddToCart, setActiveTab } = useOutletContext();
   return (
-    <WishlistPage
-      onAddToCart={handleAddToCart}
-      onNavigateCatalog={() => setActiveTab("catalog")}
-    />
+    <WishlistPage onAddToCart={handleAddToCart} onNavigateCatalog={() => setActiveTab("catalog")} />
   );
 }
 

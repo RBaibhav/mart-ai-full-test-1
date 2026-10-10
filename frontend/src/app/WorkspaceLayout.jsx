@@ -6,15 +6,10 @@ import { Navbar } from "../components/Navbar";
 import { AssistantDrawer } from "../components/AssistantDrawer";
 import { DocumentUploadModal } from "../components/DocumentUploadModal";
 import { ComparisonModal } from "../components/ComparisonModal";
+import { ToastHost } from "../components/ToastHost";
+import { notify } from "../utils/notify";
 
-const workspaceRoutes = [
-  "/catalog",
-  "/orders",
-  "/wishlist",
-  "/cart",
-  "/preferences",
-  "/audits",
-];
+const workspaceRoutes = ["/catalog", "/orders", "/wishlist", "/cart", "/preferences", "/audits"];
 
 export function WorkspaceLayout() {
   const { user } = useAuth();
@@ -28,9 +23,7 @@ export function WorkspaceLayout() {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
 
   const activeTab =
-    workspaceRoutes
-      .find((path) => location.pathname.startsWith(path))
-      ?.slice(1) || "catalog";
+    workspaceRoutes.find((path) => location.pathname.startsWith(path))?.slice(1) || "catalog";
   const setActiveTab = (tab) => navigate(`/${tab}`);
 
   useEffect(() => {
@@ -41,9 +34,7 @@ export function WorkspaceLayout() {
       .catch(() => {});
     api
       .getWishlist()
-      .then((wishlist) =>
-        setWishlistIds((wishlist.items || []).map((item) => item.id)),
-      )
+      .then((wishlist) => setWishlistIds((wishlist.items || []).map((item) => item.id)))
       .catch(() => {});
   }, [user]);
 
@@ -51,9 +42,9 @@ export function WorkspaceLayout() {
     try {
       const updated = await api.addToCart(productId, quantity);
       setCartCount(updated.itemCount || 0);
-      alert("Product added to cart!");
+      notify("Product added to cart.", "success");
     } catch (err) {
-      alert(err.message || "Failed to add product to cart");
+      notify(err.message || "Failed to add product to cart", "error");
     }
   };
 
@@ -64,16 +55,15 @@ export function WorkspaceLayout() {
         : await api.addToWishlist(productId);
       setWishlistIds((updated.items || []).map((item) => item.id));
     } catch (err) {
-      alert(err.message || "Failed to update wishlist");
+      notify(err.message || "Failed to update wishlist", "error");
     }
   };
 
   const handleToggleCompare = (productId) => {
     setCompareIds((current) => {
-      if (current.includes(productId))
-        return current.filter((id) => id !== productId);
+      if (current.includes(productId)) return current.filter((id) => id !== productId);
       if (current.length >= 4) {
-        alert("You can compare up to 4 products at a time.");
+        notify("You can compare up to 4 products at a time.", "info");
         return current;
       }
       return [...current, productId];
@@ -110,10 +100,7 @@ export function WorkspaceLayout() {
         onClose={() => setIsAssistantOpen(false)}
         onAddToCart={handleAddToCart}
       />
-      <DocumentUploadModal
-        isOpen={isUploadOpen}
-        onClose={() => setIsUploadOpen(false)}
-      />
+      <DocumentUploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} />
       {isCompareOpen && (
         <ComparisonModal
           productIds={compareIds}
@@ -124,6 +111,7 @@ export function WorkspaceLayout() {
           onAddToCart={handleAddToCart}
         />
       )}
+      <ToastHost />
     </div>
   );
 }

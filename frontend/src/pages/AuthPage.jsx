@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-  ArrowRight,
-  Check,
-  LockKeyhole,
-  Mail,
-  ShoppingBag,
-  UserRound,
-} from "lucide-react";
+import { ArrowRight, Check, LockKeyhole, Mail, ShoppingBag, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DEMO_ACCOUNTS, useAuth } from "../context/AuthContext";
 
-export function AuthPage({ initialMode = 'signin' }) {
+export function AuthPage({ initialMode = "signin" }) {
   const { login, register, loading } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState(initialMode);
@@ -54,8 +47,8 @@ export function AuthPage({ initialMode = 'signin' }) {
           <div className="eyebrow">Your smarter shopping workspace</div>
           <h1>Make every purchase feel considered.</h1>
           <p>
-            Search the catalog, compare what matters, and get grounded help from
-            one assistant that understands your orders and policies.
+            Search the catalog, compare what matters, and get grounded help from one assistant that
+            understands your orders and policies.
           </p>
           <div className="auth-proof">
             <span>
@@ -79,9 +72,7 @@ export function AuthPage({ initialMode = 'signin' }) {
           <div className="auth-form-heading">
             <div className="eyebrow">Welcome back</div>
             <h2>
-              {mode === "signin"
-                ? "Sign in to your workspace"
-                : "Create your workspace account"}
+              {mode === "signin" ? "Sign in to your workspace" : "Create your workspace account"}
             </h2>
             <p>
               {mode === "signin"
@@ -158,16 +149,8 @@ export function AuthPage({ initialMode = 'signin' }) {
               </div>
             </label>
             {error && <div className="auth-error">{error}</div>}
-            <button
-              className="btn btn-primary auth-submit"
-              disabled={loading}
-              type="submit"
-            >
-              {loading
-                ? "Connecting..."
-                : mode === "signin"
-                  ? "Sign in"
-                  : "Create account"}{" "}
+            <button className="btn btn-primary auth-submit" disabled={loading} type="submit">
+              {loading ? "Connecting..." : mode === "signin" ? "Sign in" : "Create account"}{" "}
               <ArrowRight size={16} />
             </button>
           </form>
@@ -179,13 +162,8 @@ export function AuthPage({ initialMode = 'signin' }) {
                 <small>Ready to explore</small>
               </div>
               {DEMO_ACCOUNTS.slice(0, 3).map((account) => (
-                <button
-                  key={account.email}
-                  onClick={() => useDemoAccount(account)}
-                >
-                  <span className="demo-avatar">
-                    {account.name.slice(0, 1)}
-                  </span>
+                <button key={account.email} onClick={() => useDemoAccount(account)}>
+                  <span className="demo-avatar">{account.name.slice(0, 1)}</span>
                   <span>
                     <strong>{account.name}</strong>
                     <small>

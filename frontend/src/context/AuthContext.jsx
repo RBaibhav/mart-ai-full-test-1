@@ -35,9 +35,7 @@ export function AuthProvider({ children }) {
     const saved = localStorage.getItem("shopsmart_user");
     return saved ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState(() =>
-    localStorage.getItem("shopsmart_token"),
-  );
+  const [token, setToken] = useState(() => localStorage.getItem("shopsmart_token"));
   const [loading, setLoading] = useState(false);
 
   const login = async (email, password) => {
@@ -80,9 +78,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, loading, login, register, logout, switchAccount }}
-    >
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, switchAccount }}>
       {children}
     </AuthContext.Provider>
   );
