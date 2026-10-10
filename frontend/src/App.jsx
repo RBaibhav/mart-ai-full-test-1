@@ -1,4 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useOutletContext,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { api } from "./api/client";
 import { Navbar } from "./components/Navbar";
@@ -12,44 +22,56 @@ import { OrdersPage } from "./pages/OrdersPage";
 import { PreferencesPage } from "./pages/PreferencesPage";
 import { AuditPage } from "./pages/AuditPage";
 import { AuthPage } from "./pages/AuthPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
-export function App() {
-  const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState("catalog");
+const workspaceRoutes = [
+  { path: "/catalog", label: "Discover" },
+  { path: "/orders", label: "Orders" },
+  { path: "/wishlist", label: "Wishlist" },
+  { path: "/cart", label: "Cart" },
+  { path: "/preferences", label: "Preferences" },
+  { path: "/audits", label: "AI activity" },
+];
 
-  // Badge counters & selections
+function LoadingScreen() {
+  return (
+    <div className="auth-loading">
+      <div className="skeleton auth-loading-mark" />
+      <div className="skeleton auth-loading-line" />
+    </div>
+  );
+}
+
+function AuthRoutes() {
+  return (
+    <Routes>
+      <Route path="/signin" element={<AuthPage initialMode="signin" />} />
+      <Route path="/signup" element={<AuthPage initialMode="signup" />} />
+      <Route path="*" element={<Navigate to="/signin" replace />} />
+    </Routes>
+  );
+}
+
+function WorkspaceLayout() {
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
   const [wishlistIds, setWishlistIds] = useState([]);
   const [compareIds, setCompareIds] = useState([]);
-
-  // Modals & Drawers
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
 
-  // Load initial cart and wishlist states
-  const refreshCart = () => {
-    api
-      .getCart()
-      .then((c) => setCartCount(c.itemCount || 0))
-      .catch(() => {});
-  };
-
-  const refreshWishlist = () => {
-    api
-      .getWishlist()
-      .then((w) => setWishlistIds((w.items || []).map((i) => i.id)))
-      .catch(() => {});
-  };
+  const activeTab = workspaceRoutes.find((route) => location.pathname.startsWith(route.path))?.path.slice(1) || "catalog";
+  const setActiveTab = (tab) => navigate(`/${tab}`);
 
   useEffect(() => {
-    if (user) {
-      refreshCart();
-      refreshWishlist();
-    }
+    if (!user) return;
+    api.getCart().then((cart) => setCartCount(cart.itemCount || 0)).catch(() => {});
+    api.getWishlist().then((wishlist) => setWishlistIds((wishlist.items || []).map((item) => item.id))).catch(() => {});
   }, [user]);
 
-  // Handlers
   const handleAddToCart = async (productId, quantity = 1) => {
     try {
       const updated = await api.addToCart(productId, quantity);
@@ -62,56 +84,30 @@ export function App() {
 
   const handleToggleWishlist = async (productId) => {
     try {
-      if (wishlistIds.includes(productId)) {
-        const updated = await api.removeFromWishlist(productId);
-        setWishlistIds((updated.items || []).map((i) => i.id));
-      } else {
-        const updated = await api.addToWishlist(productId);
-        setWishlistIds((updated.items || []).map((i) => i.id));
-      }
+      const updated = wishlistIds.includes(productId)
+        ? await api.removeFromWishlist(productId)
+        : await api.addToWishlist(productId);
+      setWishlistIds((updated.items || []).map((item) => item.id));
     } catch (err) {
       alert(err.message || "Failed to update wishlist");
     }
   };
 
   const handleToggleCompare = (productId) => {
-    setCompareIds((prev) => {
-      if (prev.includes(productId)) {
-        return prev.filter((id) => id !== productId);
-      }
-      if (prev.length >= 4) {
+    setCompareIds((current) => {
+      if (current.includes(productId)) return current.filter((id) => id !== productId);
+      if (current.length >= 4) {
         alert("You can compare up to 4 products at a time.");
-        return prev;
+        return current;
       }
-      return [...prev, productId];
+      return [...current, productId];
     });
   };
 
-  const handleRemoveFromCompare = (productId) => {
-    setCompareIds((prev) => prev.filter((id) => id !== productId));
-  };
-
-  const handleAskAssistantAboutOrder = (prompt) => {
-    setIsAssistantOpen(true);
-  };
-
-  if (loading && !user) {
-    return (
-      <div className="auth-loading">
-        <div className="skeleton auth-loading-mark" />
-        <div className="skeleton auth-loading-line" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <AuthPage />;
-  }
+  const handleAskAssistantAboutOrder = () => setIsAssistantOpen(true);
 
   return (
-    <div
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-    >
+    <div className="app-frame">
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -120,57 +116,59 @@ export function App() {
         onOpenAssistant={() => setIsAssistantOpen(true)}
         onOpenUpload={() => setIsUploadOpen(true)}
       />
-
-      <main style={{ flex: 1 }}>
-        {activeTab === "catalog" && (
-          <CatalogPage
-            onAddToCart={handleAddToCart}
-            onToggleWishlist={handleToggleWishlist}
-            onOpenAssistant={() => setIsAssistantOpen(true)}
-            wishlistIds={wishlistIds}
-            compareIds={compareIds}
-            onToggleCompare={handleToggleCompare}
-            onOpenCompare={() => setIsCompareOpen(true)}
-          />
-        )}
-        {activeTab === "cart" && (
-          <CartPage onNavigateCatalog={() => setActiveTab("catalog")} />
-        )}
-        {activeTab === "wishlist" && (
-          <WishlistPage
-            onAddToCart={handleAddToCart}
-            onNavigateCatalog={() => setActiveTab("catalog")}
-          />
-        )}
-        {activeTab === "orders" && (
-          <OrdersPage onAskAssistantAboutOrder={handleAskAssistantAboutOrder} />
-        )}
-        {activeTab === "preferences" && <PreferencesPage />}
-        {activeTab === "audits" && <AuditPage />}
-      </main>
-
-      {/* Global AI Assistant Drawer */}
-      <AssistantDrawer
-        isOpen={isAssistantOpen}
-        onClose={() => setIsAssistantOpen(false)}
-        onAddToCart={handleAddToCart}
-      />
-
-      {/* Document Upload Modal */}
-      <DocumentUploadModal
-        isOpen={isUploadOpen}
-        onClose={() => setIsUploadOpen(false)}
-      />
-
-      {/* Side-by-Side Comparison Modal */}
-      {isCompareOpen && (
-        <ComparisonModal
-          productIds={compareIds}
-          onClose={() => setIsCompareOpen(false)}
-          onRemoveFromCompare={handleRemoveFromCompare}
-          onAddToCart={handleAddToCart}
-        />
-      )}
+      <main className="app-main"><Outlet context={{ handleAddToCart, handleToggleWishlist, wishlistIds, compareIds, handleToggleCompare, setIsCompareOpen, setIsAssistantOpen, handleAskAssistantAboutOrder, setActiveTab }} /></main>
+      <AssistantDrawer isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} onAddToCart={handleAddToCart} />
+      <DocumentUploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} />
+      {isCompareOpen && <ComparisonModal productIds={compareIds} onClose={() => setIsCompareOpen(false)} onRemoveFromCompare={(id) => setCompareIds((current) => current.filter((item) => item !== id))} onAddToCart={handleAddToCart} />}
     </div>
   );
+}
+
+function WorkspaceRoutes() {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  if (loading && !user) return <LoadingScreen />;
+  if (!user) return <AuthRoutes />;
+  if (location.pathname === "/signin" || location.pathname === "/signup") {
+    return <Navigate to="/catalog" replace />;
+  }
+
+  return (
+    <Routes>
+      <Route element={<WorkspaceLayout />}>
+        <Route index element={<Navigate to="/catalog" replace />} />
+        <Route path="catalog" element={<CatalogRoute />} />
+        <Route path="cart" element={<CartRoute />} />
+        <Route path="wishlist" element={<WishlistRoute />} />
+        <Route path="orders" element={<OrdersRoute />} />
+        <Route path="preferences" element={<PreferencesPage />} />
+        <Route path="audits" element={<AuditPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
+  );
+}
+
+function CatalogRoute() {
+  const { handleAddToCart, handleToggleWishlist, wishlistIds, compareIds, handleToggleCompare, setIsCompareOpen, setIsAssistantOpen } = useOutletContext();
+  return <CatalogPage onAddToCart={handleAddToCart} onToggleWishlist={handleToggleWishlist} onOpenAssistant={() => setIsAssistantOpen(true)} wishlistIds={wishlistIds} compareIds={compareIds} onToggleCompare={handleToggleCompare} onOpenCompare={() => setIsCompareOpen(true)} />;
+}
+
+function CartRoute() {
+  const { setActiveTab } = useOutletContext();
+  return <CartPage onNavigateCatalog={() => setActiveTab("catalog")} />;
+}
+
+function WishlistRoute() {
+  const { handleAddToCart, setActiveTab } = useOutletContext();
+  return <WishlistPage onAddToCart={handleAddToCart} onNavigateCatalog={() => setActiveTab("catalog")} />;
+}
+
+function OrdersRoute() {
+  const { handleAskAssistantAboutOrder } = useOutletContext();
+  return <OrdersPage onAskAssistantAboutOrder={handleAskAssistantAboutOrder} />;
+}
+
+export function App() {
+  return <BrowserRouter><WorkspaceRoutes /></BrowserRouter>;
 }

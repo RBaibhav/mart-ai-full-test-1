@@ -7,11 +7,13 @@ import {
   ShoppingBag,
   UserRound,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { DEMO_ACCOUNTS, useAuth } from "../context/AuthContext";
 
-export function AuthPage() {
+export function AuthPage({ initialMode = 'signin' }) {
   const { login, register, loading } = useAuth();
-  const [mode, setMode] = useState("signin");
+  const navigate = useNavigate();
+  const [mode, setMode] = useState(initialMode);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("alice@example.com");
   const [password, setPassword] = useState("password123");
@@ -26,6 +28,7 @@ export function AuthPage() {
       } else {
         await login(email, password);
       }
+      navigate("/catalog", { replace: true });
     } catch (err) {
       setError(err.message || "We could not complete that request.");
     }
@@ -93,6 +96,7 @@ export function AuthPage() {
               onClick={() => {
                 setMode("signin");
                 setError("");
+                navigate("/signin");
               }}
               role="tab"
             >
@@ -103,6 +107,7 @@ export function AuthPage() {
               onClick={() => {
                 setMode("signup");
                 setError("");
+                navigate("/signup");
               }}
               role="tab"
             >
