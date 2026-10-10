@@ -5,6 +5,7 @@ import com.shopsmart.ai.dto.RecommendationResponseDto;
 import com.shopsmart.ai.model.AuditRecord;
 import com.shopsmart.ai.tools.CustomerOrderTool;
 import com.shopsmart.ai.tools.PolicyKnowledgeTool;
+import com.shopsmart.common.JsonUtil;
 import com.shopsmart.knowledge.dto.KnowledgeResponseDto;
 import com.shopsmart.orders.dto.OrderDetailDto;
 import com.shopsmart.orders.dto.OrderSummaryDto;
@@ -20,15 +21,18 @@ public class CoordinatedChatService {
     private final PolicyKnowledgeTool policyTool;
     private final RecommendationService recommendationService;
     private final AuditService auditService;
+    private final ExternalAiService externalAiService;
 
     public CoordinatedChatService(CustomerOrderTool orderTool,
                                   PolicyKnowledgeTool policyTool,
                                   RecommendationService recommendationService,
-                                  AuditService auditService) {
+                                  AuditService auditService,
+                                  ExternalAiService externalAiService) {
         this.orderTool = orderTool;
         this.policyTool = policyTool;
         this.recommendationService = recommendationService;
         this.auditService = auditService;
+        this.externalAiService = externalAiService;
     }
 
     public ChatResponseDto processChat(String message) {
@@ -38,7 +42,8 @@ public class CoordinatedChatService {
 
         // Intent detection: Coordinated order tracking + cancellation policy lookup
         boolean asksAboutOrder = lower.contains("where is my order") || lower.contains("order status")
-                || lower.contains("track") || lower.contains("shipment") || lower.contains("order");
+            || lower.contains("track") || lower.contains("shipment") || lower.contains("delivery")
+            || lower.contains("delivered") || lower.contains("shipped") || lower.contains("out for delivery");
         boolean asksAboutCancel = lower.contains("cancel") || lower.contains("cancellation");
         boolean asksAboutReturnOrPolicy = lower.contains("return") || lower.contains("policy") || lower.contains("refund");
         boolean asksAboutRecommendation = lower.contains("recommend") || lower.contains("laptop")
@@ -97,11 +102,13 @@ public class CoordinatedChatService {
                     .append("You may receive the shipment and initiate a return request following delivery under the applicable return policy. ")
                     .append("\n\n[Note: Cancellation eligibility is strictly informational; this assistant does not execute cancellations.]");
 
-            AuditRecord audit = auditService.recordAudit(
-                    message, sb.toString(), toolActivity, sources, "SUCCESS"
+                String groundedAnswer = sb.toString();
+                String answer = enhanceAnswer(message, "COORDINATED_ASSISTANCE", groundedAnswer, sources);
+                AuditRecord audit = auditService.recordAudit(
+                    message, answer, toolActivity, sources, "SUCCESS"
             );
 
-            return new ChatResponseDto(sb.toString(), "COORDINATED_ASSISTANCE", toolActivity, sources, null, audit.getId());
+                return new ChatResponseDto(answer, "COORDINATED_ASSISTANCE", toolActivity, sources, null, audit.getId());
 
         } else if (asksAboutOrder) {
             // Pure order lookup
@@ -129,8 +136,9 @@ public class CoordinatedChatService {
                         .append(event.getTimestamp().toLocalDate()).append(")\n");
             }
 
-            AuditRecord audit = auditService.recordAudit(message, sb.toString(), toolActivity, sources, "SUCCESS");
-            return new ChatResponseDto(sb.toString(), "ORDER_TRACKING", toolActivity, sources, null, audit.getId());
+            String answer = enhanceAnswer(message, "ORDER_TRACKING", sb.toString(), sources);
+            AuditRecord audit = auditService.recordAudit(message, answer, toolActivity, sources, "SUCCESS");
+            return new ChatResponseDto(answer, "ORDER_TRACKING", toolActivity, sources, null, audit.getId());
 
         } else if (asksAboutReturnOrPolicy) {
             // Policy question via RAG
@@ -143,8 +151,9 @@ public class CoordinatedChatService {
                 sources.addAll(policyResp.getSources());
             }
 
-            AuditRecord audit = auditService.recordAudit(message, policyResp.getAnswer(), toolActivity, sources, "SUCCESS");
-            return new ChatResponseDto(policyResp.getAnswer(), "POLICY_LOOKUP", toolActivity, sources, null, audit.getId());
+            String answer = enhanceAnswer(message, "POLICY_LOOKUP", policyResp.getAnswer(), sources);
+            AuditRecord audit = auditService.recordAudit(message, answer, toolActivity, sources, "SUCCESS");
+            return new ChatResponseDto(answer, "POLICY_LOOKUP", toolActivity, sources, null, audit.getId());
 
         } else {
             // Recommendation intent
@@ -165,8 +174,17 @@ public class CoordinatedChatService {
                 reply = "No catalog products matched your specific requirements within budget.";
             }
 
-            AuditRecord audit = auditService.recordAudit(message, reply, toolActivity, sources, "SUCCESS");
-            return new ChatResponseDto(reply, "RECOMMENDATION", toolActivity, sources, rec, audit.getId());
+            String groundedContext = reply + "\nRecommendation data: " + JsonUtil.toJson(rec);
+            String answer = enhanceAnswer(message, "RECOMMENDATION", groundedContext, sources);
+            AuditRecord audit = auditService.recordAudit(message, answer, toolActivity, sources, "SUCCESS");
+            return new ChatResponseDto(answer, "RECOMMENDATION", toolActivity, sources, rec, audit.getId());
         }
+    }
+
+    private String enhanceAnswer(String question, String intent, String groundedAnswer,
+                                  List<KnowledgeResponseDto.SourceCitation> sources) {
+        String citations = sources.isEmpty() ? "No document citations were returned." : sources.toString();
+        String context = groundedAnswer + "\nCitations: " + citations;
+        return externalAiService.generateGroundedAnswer(question, intent, context).orElse(groundedAnswer);
     }
 }
