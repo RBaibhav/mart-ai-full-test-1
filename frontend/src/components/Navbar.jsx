@@ -5,7 +5,6 @@ import {
   Heart,
   ShoppingCart,
   Package,
-  Settings,
   FileText,
   Sparkles,
   ShieldCheck,
@@ -29,7 +28,6 @@ export function Navbar({
     { id: "orders", label: "Orders", icon: Package },
     { id: "wishlist", label: "Wishlist", icon: Heart, count: wishlistCount },
     { id: "cart", label: "Cart", icon: ShoppingCart, count: cartCount },
-    { id: "preferences", label: "Preferences", icon: Settings },
     { id: "audits", label: "AI activity", icon: ShieldCheck },
   ];
 

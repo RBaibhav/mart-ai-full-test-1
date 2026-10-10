@@ -5,7 +5,6 @@ import { CatalogPage } from "../pages/CatalogPage";
 import { CartPage } from "../pages/CartPage";
 import { WishlistPage } from "../pages/WishlistPage";
 import { OrdersPage } from "../pages/OrdersPage";
-import { PreferencesPage } from "../pages/PreferencesPage";
 import { AuditPage } from "../pages/AuditPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 
@@ -18,7 +17,6 @@ export function WorkspaceRoutes() {
         <Route path="cart" element={<CartRoute />} />
         <Route path="wishlist" element={<WishlistRoute />} />
         <Route path="orders" element={<OrdersRoute />} />
-        <Route path="preferences" element={<PreferencesPage />} />
         <Route path="audits" element={<AuditPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

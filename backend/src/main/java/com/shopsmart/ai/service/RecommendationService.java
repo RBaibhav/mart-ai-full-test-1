@@ -4,11 +4,7 @@ import com.shopsmart.ai.dto.RecommendationResponseDto;
 import com.shopsmart.ai.tools.ProductCatalogTool;
 import com.shopsmart.ai.tools.WarehouseInventoryTool;
 import com.shopsmart.common.JsonUtil;
-import com.shopsmart.security.CurrentUser;
-import com.shopsmart.security.UserContext;
-import com.shopsmart.shopping.model.CustomerPreference;
 import com.shopsmart.shopping.model.Product;
-import com.shopsmart.shopping.repository.CustomerPreferenceRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,16 +17,13 @@ public class RecommendationService {
 
     private final ProductCatalogTool catalogTool;
     private final WarehouseInventoryTool inventoryTool;
-    private final CustomerPreferenceRepository preferenceRepository;
     private final AuditService auditService;
 
     public RecommendationService(ProductCatalogTool catalogTool,
                                  WarehouseInventoryTool inventoryTool,
-                                 CustomerPreferenceRepository preferenceRepository,
                                  AuditService auditService) {
         this.catalogTool = catalogTool;
         this.inventoryTool = inventoryTool;
-        this.preferenceRepository = preferenceRepository;
         this.auditService = auditService;
     }
 
@@ -44,15 +37,8 @@ public class RecommendationService {
             );
         }
 
-        // 1. Read message and saved preferences
-        CurrentUser user = UserContext.get();
-        CustomerPreference savedPref = (user != null) ? preferenceRepository.findById(user.getId()).orElse(null) : null;
-
-        // 2. Extract budget, use, and specifications
+        // Extract requirements only from the current request.
         BigDecimal budget = extractBudget(message);
-        if (budget == null && savedPref != null && savedPref.getBudget() != null) {
-            budget = savedPref.getBudget();
-        }
 
         String requirement = interpretRequirement(message);
 
